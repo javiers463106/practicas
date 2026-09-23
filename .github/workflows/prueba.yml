@@ -1,4 +1,4 @@
-name: Prueba secrets y variables localesv2
+name: Prueba secrets y variables locales
 
 on:
   push:
@@ -8,11 +8,16 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - name: Comparar DEV_TOKEN con LOCAL_DEV_TOKEN
+      - name: Comprobar variables
         shell: pwsh
         env:
           DEV_TOKEN: ${{ secrets.DEV_TOKEN }}
         run: |
+          Write-Host "DEV_TOKEN presente: $([string]::IsNullOrEmpty($env:DEV_TOKEN) -eq $false)"
+          Write-Host "LOCAL_DEV_TOKEN presente: $([string]::IsNullOrEmpty($env:LOCAL_DEV_TOKEN) -eq $false)"
+          Write-Host "Longitud DEV_TOKEN: $($env:DEV_TOKEN.Length)"
+          Write-Host "Longitud LOCAL_DEV_TOKEN: $($env:LOCAL_DEV_TOKEN.Length)"
+
           if ($env:DEV_TOKEN -eq $env:LOCAL_DEV_TOKEN) {
             Write-Host "Los tokens coinciden."
           } else {

@@ -9,7 +9,7 @@ jobs:
 
     steps:
       - name: Comprobar variables
-        shell: pwsh
+        shell: powershell
         env:
           DEV_TOKEN: ${{ secrets.DEV_TOKEN }}
         run: |

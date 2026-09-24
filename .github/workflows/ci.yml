@@ -36,6 +36,7 @@ jobs:
 
           git add README.md
           git commit -m "Update README with feature" || echo "No changes to commit"
+          git pull --rebase origin ${{ github.head_ref || github.ref_name }}
           git push origin HEAD:${{ github.head_ref || github.ref_name }}
 
   validate-dev:

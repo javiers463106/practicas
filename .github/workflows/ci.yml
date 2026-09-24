@@ -8,6 +8,9 @@ on:
     branches:
       - develop
 
+permissions:
+  contents: write
+
 jobs:
   update-readme:
     runs-on: self-hosted
@@ -17,22 +20,31 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Update README
+        shell: powershell
         run: |
-          echo "Nueva feature añadida" >> README.md
+          Add-Content README.md "Nueva feature añadida"
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add README.md
+          git commit -m "Update README with feature"
+          git push origin HEAD:${{ github.head_ref }}
 
   validate-dev:
     needs: update-readme
     runs-on: self-hosted
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Validate DEV token
         env:
           DEV_TOKEN: ${{ secrets.DEV_TOKEN }}
-          LOCAL_DEV_TOKEN: ${{ env.LOCAL_DEV_TOKEN }}
+        shell: powershell
         run: |
-          if [ "$DEV_TOKEN" = "$LOCAL_DEV_TOKEN" ]; then
-            echo "Los tokens coinciden"
-          else
-            echo "Los tokens NO coinciden"
+          if ($env:DEV_TOKEN -eq $env:LOCAL_DEV_TOKEN) {
+            Write-Host "Los tokens coinciden"
+          } else {
+            Write-Host "Los tokens NO coinciden"
             exit 1
-          fi
+          }

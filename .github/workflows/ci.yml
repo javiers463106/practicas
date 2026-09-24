@@ -4,30 +4,39 @@ on:
   push:
     branches:
       - develop
+
   pull_request:
     branches:
       - develop
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
   update-readme:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Update README
-        shell: powershell
+        shell: bash
         run: |
-          Add-Content README.md "Nueva feature añadida"
+          echo "Añadida feature: ${{ github.head_ref || github.ref_name }}" >> README.md
+
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
+
           git add README.md
-          git commit -m "Update README with feature"
-          git push origin HEAD:${{ github.head_ref }}
+          git commit -m "Update README with feature" || echo "No changes to commit"
+          git push origin HEAD:${{ github.head_ref || github.ref_name }}
 
   validate-dev:
     needs: update-readme

@@ -12,8 +12,8 @@ permissions:
   contents: write
 
 jobs:
-  update-readme:
-    runs-on: self-hosted
+  update-readme: 
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout

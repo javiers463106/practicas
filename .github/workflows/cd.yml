@@ -1,0 +1,37 @@
+name: CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  bump-version:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Bump version
+        shell: powershell
+        run: |
+          (Get-Content README.md) -replace 'AppVersion-0', 'AppVersion-1' | Set-Content README.md
+
+  validate-production:
+    needs: bump-version
+    runs-on: self-hosted
+
+    steps:
+      - name: Validate production token
+        shell: powershell
+        env:
+          PROD_TOKEN: ${{ secrets.PROD_TOKEN }}
+          LOCAL_PROD_TOKEN: ${{ env.LOCAL_PROD_TOKEN }}
+        run: |
+          if ($env:PROD_TOKEN -eq $env:LOCAL_PROD_TOKEN) {
+            Write-Host "Los tokens de producción coinciden"
+          } else {
+            Write-Host "Los tokens de producción NO coinciden"
+            exit 1
+          }

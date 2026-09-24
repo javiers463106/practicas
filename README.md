@@ -1,5 +1,5 @@
-# practicas
+practicas
 
-AppVersion-2 2026-09-24 17:10:17
-Nueva feature añadidaNueva feature añadida
-Nueva feature añadida
+[svg](https://github.com/javiers463106/practicas/blob/main/README.md#practicas)
+
+AppVersion-0

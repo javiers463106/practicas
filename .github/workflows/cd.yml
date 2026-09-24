@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
   bump-version:
     runs-on: self-hosted
@@ -17,17 +20,24 @@ jobs:
         shell: powershell
         run: |
           (Get-Content README.md) -replace 'AppVersion-0', 'AppVersion-1' | Set-Content README.md
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add README.md
+          git commit -m "Bump README version"
+          git push
 
   validate-production:
     needs: bump-version
     runs-on: self-hosted
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Validate production token
-        shell: powershell
         env:
           PROD_TOKEN: ${{ secrets.PROD_TOKEN }}
-          LOCAL_PROD_TOKEN: ${{ env.LOCAL_PROD_TOKEN }}
+        shell: powershell
         run: |
           if ($env:PROD_TOKEN -eq $env:LOCAL_PROD_TOKEN) {
             Write-Host "Los tokens de producción coinciden"

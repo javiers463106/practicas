@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  update-readme:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Update README
+        run: |
+          echo "Nueva feature añadida" >> README.md
+
+  validate-dev:
+    needs: update-readme
+    runs-on: self-hosted
+
+    steps:
+      - name: Validate DEV token
+        env:
+          DEV_TOKEN: ${{ secrets.DEV_TOKEN }}
+          LOCAL_DEV_TOKEN: ${{ env.LOCAL_DEV_TOKEN }}
+        run: |
+          if [ "$DEV_TOKEN" = "$LOCAL_DEV_TOKEN" ]; then
+            echo "Los tokens coinciden"
+          else
+            echo "Los tokens NO coinciden"
+            exit 1
+          fi
